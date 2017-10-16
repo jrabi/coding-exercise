@@ -1,0 +1,60 @@
+﻿@model IEnumerable<MvcApplication1.Models.HotelOffer>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="dynamic">
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-inline forsubmit", @id = "simpleSearchForm" }))
+    {
+        @Html.TextBox("Destination", null, new { @class = "", @placeholder = "Destination" })
+        @Html.Raw(" ")
+        @Html.TextBox("TripStartDateFrom", null, new { @placeholder = "Trip Start Date From" })
+        @Html.TextBox("TripStartDateTo", null, new { @placeholder = "Trip Start Date To" })
+        @Html.Raw(" ")
+        @Html.TextBox("StayLength", null, new { @placeholder = "Length of Stay"})
+        @Html.Raw(" ")
+        @Html.TextBox("StarRatingFrom", null, new { @placeholder = "Min Stars" })
+               
+        <button type="button" id="simpleSearch" name="simpleSearch" class="btn btn-primary">
+            Find</button>
+        <input type="button" class="btn" id="resetSearch" value="Reset"/>
+    }
+</div>
+<br />
+<br />
+@if (Model == null)
+{
+    <div>Please enter search criteria then press Find.</div>
+}
+else if (Model.Count() != 0)
+{
+<div style="display: inline-block">
+@{
+    int i = 0;
+    foreach (var item in Model)
+    {
+    	<div style="display: inline-block; border: 1px solid black; width: 270px">
+            <div><a href="@HttpUtility.UrlDecode(item.hotelUrls.hotelInfositeUrl)">@item.hotelInfo.localizedHotelName</a></div>
+            <img src="@item.hotelInfo.hotelImageUrl"  width="150" alt=""/>
+            <div>@item.hotelInfo.hotelDestination</div>
+            <div>Stars: @item.hotelInfo.hotelStarRating</div>
+            <div>Guest Reviews: @item.hotelInfo.hotelGuestReviewRating</div>
+            <div>Check-in Date: @(item.offerDateRange.travelStartDate[0])-@(item.offerDateRange.travelStartDate[1])-@item.offerDateRange.travelStartDate[2]</div>
+            <div>Length of Stay: @item.offerDateRange.lengthOfStay</div>
+            <div>Price: <strike>$@(item.hotelPricingInfo.originalPricePerNight * item.offerDateRange.lengthOfStay)</strike> $@item.hotelPricingInfo.totalPriceValue
+            (Save @item.hotelPricingInfo.percentSavings %)
+            </div>
+        </div>
+        if (i % 3 == 2)
+        {
+            <br /> <br />
+        }
+        i++;
+    }
+}
+</div>
+}
+else
+{
+    <div>No results found.</div>
+}
